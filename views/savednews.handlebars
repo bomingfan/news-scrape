@@ -2,7 +2,7 @@
 {{#each news}}
 <div class="panel panel-info">
   <div class="panel-heading">
-    <h1 class="panel-title">{{this.title}}</h1>
+    <div class="panel-title"><h2>{{this.title}}</h2></div>
     <a id={{this._id}} class="btn btn-primary">Add a Note</a>
     <a id={{this._id}} class="btn btn-warning">Delete the Article</a>
   </div>
@@ -17,7 +17,7 @@
 
 
 <script>
-  // When you click the savenote button
+  // When you click the delete button
   $(document).on("click", ".btn-warning", function () {
     // Grab the id associated with the article from the submit button
     var thisId = $(this).attr("id");
@@ -33,5 +33,9 @@
         location.reload();
       });
   });
+
+  //When you click the note button
+  $
+
 
 </script>

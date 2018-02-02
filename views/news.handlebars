@@ -1,10 +1,10 @@
  {{#each news}}
 <div class="panel panel-info">
   <div class="panel-heading">
-    <h1 class="panel-title">
-      <a href={{this.link}}>{{this.title}}</a>
-    </h1>
+    <div class="panel-title">
+      <a href={{this.link}}><h2>{{this.title}}</h2></a>
     <a id={{this.index}} class="btn btn-success">Save the Article</a>
+    </div>
   </div>
   <div class="panel-body">
     <div>{{this.summary}}</div>
@@ -18,7 +18,7 @@
   $(document).on("click", ".btn-success", function () {
     // Grab the id associated with the article from the submit button
     var thisId = $(this).attr("id");
-
+  
     // Run a POST request to change the note, using what's entered in the inputs
     $.ajax({
       method: "POST",
