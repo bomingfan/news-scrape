@@ -2,7 +2,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
-var exphbs  = require('express-handlebars');
+var exphbs = require('express-handlebars');
 
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
@@ -19,7 +19,7 @@ var PORT = 3000;
 var app = express();
 
 // Configure middleware
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 
 // Use morgan logger for logging requests
@@ -32,33 +32,37 @@ app.use(express.static("public"));
 // By default mongoose uses callbacks for async queries, we're setting it to use promises (.then syntax) instead
 // Connect to the Mongo DB
 mongoose.Promise = Promise;
-if(process.env.MONGODB_URI) {
-    mongoose.connect(process.env.MONGODB_URI, {
-        useMongoClient: true
-    });
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI, {
+    useMongoClient: true
+  });
 } else {
-    mongoose.connect("mongodb://localhost/newsDB", {
-        useMongoClient: true
-    });
+  mongoose.connect("mongodb://localhost/newsDB", {
+    useMongoClient: true
+  });
 }
 
 
 // Routes
 
 // A GET route for scraping the echojs website
-app.get("/scrape", function(req, res) {
+app.get("/scrape", function (req, res) {
   var resultsArray = [];
   // First, we grab the body of the html with request
-  axios.get("https://techcrunch.com/popular/").then(function(response) {
+  axios.get("https://techcrunch.com/popular/").then(function (response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
-    
+
     // Now, we grab every h2 within an article tag, and do the following:
-    $(".block-content").each(function(i, element) {
+    $(".block-content").each(function (i, element) {
       // Save an empty result object
       var result = {};
-
+      $(this).children("p.excerpt").children("a").remove();
       // Add the text and href of every link, and save them as properties of the result object
+      result.index = $(this)
+        .parent("div")
+        .parent("li")
+        .attr("id");
       result.title = $(this)
         .children("h2")
         .text();
@@ -69,52 +73,77 @@ app.get("/scrape", function(req, res) {
         .children("h2")
         .children("a")
         .attr("href");
-      
-       resultsArray.push(result);
+
+      resultsArray.push(result);
     });
 
-    db.Article.insertMany(resultsArray)
-    .then(function(dbArticle) {
-      // View the added result in the console
-      return res.json(dbArticle);
-    })
-    .catch(function(err) {
-      // If an error occurred, send it to the client
-      return res.status(400).json(err);
-      
-    });
+
+    res.render("news", { news: resultsArray });
+    // db.Article.insertMany(resultsArray)
+    // .then(function(dbArticle) {
+    //   // View the added result in the console
+    //   return res.json(dbArticle);
+    // })
+    // .catch(function(err) {
+    //   // If an error occurred, send it to the client
+    //   return res.status(400).json(err);
+
+    // });
   });
 });
 
+// Route for Homepage
+app.get("/", function (req, res) {
+  // render home page.
+  res.render("home");
+});
+
+// Route for About Page
+app.get("/about", function (req, res) {
+  // render about page.
+  res.render("about");
+});
+
+
 // Route for getting all Articles from the db
-app.get("/articles", function(req, res) {
+
+app.get("/articles", function (req, res) {
   // Grab every document in the Articles collection
-  db.Article.find({})
-    .then(function(dbArticle) {
+  db.Article.find({}).sort({})
+    .then(function (dbArticle) {
       // If we were able to successfully find Articles, send them back to the client
-      res.render("news", {news: dbArticle});
+      res.render("savednews", { news: dbArticle });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       // If an error occurred, send it to the client
       res.json(err);
     });
 });
 
-// // Route for grabbing a specific Article by id, populate it with it's note
-// app.get("/articles/:id", function(req, res) {
-//   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-//   db.Article.findOne({ _id: req.params.id })
-//     // ..and populate all of the notes associated with it
-//     .populate("note")
-//     .then(function(dbArticle) {
-//       // If we were able to successfully find an Article with the given id, send it back to the client
-//       res.json(dbArticle);
-//     })
-//     .catch(function(err) {
-//       // If an error occurred, send it to the client
-//       res.json(err);
-//     });
-// });
+// Route for saving an article
+app.post("/articles/:id", function (req, res) {
+  db.Article.create(req.body)
+    .then(function (dbArticle) {
+      return res.json(dbArticle);
+    })
+    .catch(function (err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+})
+
+// delete an article
+app.delete("/articles/delete/:id", function(req, res) {
+  db.Article.findByIdAndRemove(req.params.id)
+  .then(function(data){
+    res.json(data);
+  })
+  .catch(function (err){
+    res.json(err);
+  })
+})
+
+
 
 // // Route for saving/updating an Article's associated Note
 // app.post("/articles/:id", function(req, res) {
@@ -137,6 +166,6 @@ app.get("/articles", function(req, res) {
 // });
 
 // Start the server
-app.listen(PORT, function() {
+app.listen(PORT, function () {
   console.log("App running on port " + PORT + "!");
 });

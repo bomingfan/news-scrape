@@ -1,0 +1,37 @@
+
+{{#each news}}
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h1 class="panel-title">{{this.title}}</h1>
+    <a id={{this._id}} class="btn btn-primary">Add a Note</a>
+    <a id={{this._id}} class="btn btn-warning">Delete the Article</a>
+  </div>
+  <div class="panel-body">
+    {{this.summary}}
+    <a href={{this.link}}>Read More</a>
+  </div>
+</div>
+{{/each}}
+
+
+
+
+<script>
+  // When you click the savenote button
+  $(document).on("click", ".btn-warning", function () {
+    // Grab the id associated with the article from the submit button
+    var thisId = $(this).attr("id");
+
+    // Run a POST request to change the note, using what's entered in the inputs
+    $.ajax({
+      method: "DELETE",
+      url: "/articles/delete/" + thisId,
+    })
+      // With that done
+      .then(function (data) {
+        console.log(data);
+        location.reload();
+      });
+  });
+
+</script>
