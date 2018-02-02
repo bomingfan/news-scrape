@@ -95,7 +95,7 @@ app.get("/scrape", function (req, res) {
 // Route for Homepage
 app.get("/", function (req, res) {
   // render home page.
-  res.render("home");
+  res.render("index");
 });
 
 // Route for About Page
