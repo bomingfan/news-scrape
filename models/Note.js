@@ -12,6 +12,15 @@ var NoteSchema = new Schema({
   body: String
 });
 
+NoteSchema.pre('update',function(next) {
+  this.model('Article').update(
+      { },
+      { "$pull": { "notes": this._id } },
+      { "multi": true },
+      next
+  );
+})
+
 // This creates our model from the above schema, using mongoose's model method
 var Note = mongoose.model("Note", NoteSchema);
 

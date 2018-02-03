@@ -1,10 +1,10 @@
 
 {{#each news}}
-<div class="panel panel-info">
+<div class="panel panel-primary">
   <div class="panel-heading">
     <div class="panel-title"><h2>{{this.title}}</h2></div>
-    <a id={{this._id}} class="btn btn-primary">Add a Note</a>
-    <a id={{this._id}} class="btn btn-warning">Delete the Article</a>
+    <a href="/notes/{{this._id}}" class="btn btn-info">Add a Note</a>
+    <a id={{this._id}} class="btn btn-danger">Delete the Article</a>
   </div>
   <div class="panel-body">
     {{this.summary}}
@@ -18,7 +18,7 @@
 
 <script>
   // When you click the delete button
-  $(document).on("click", ".btn-warning", function () {
+  $(document).on("click", ".btn-danger", function () {
     // Grab the id associated with the article from the submit button
     var thisId = $(this).attr("id");
 
@@ -29,13 +29,13 @@
     })
       // With that done
       .then(function (data) {
-        console.log(data);
+        alert("Article " + data._id + " Deleted!")
         location.reload();
       });
   });
 
   //When you click the note button
-  $
+  
 
 
 </script>

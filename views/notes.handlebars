@@ -1,0 +1,56 @@
+
+<h2>Notes for Article:</h2>
+<h2>{{notes.title}}</h2>
+
+{{#each notes.notes}}
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <div class="panel-title">
+        <h4>{{this.title}}</h4>
+        <a id={{this._id}} class="btn btn-danger">Delete a Note</a>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div>{{this.body}}</div>
+  </div>
+</div>
+{{/each}}
+
+<form action="/notes/{{notes._id}}" method="POST">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input class="form-control" name="title" placeholder="Enter title">
+
+    </div>
+    <div class="form-group">
+        <label for="textArea">Body</label>
+        <textarea class="form-control" name="body" rows="3"></textarea>
+    </div>
+<button class="btn btn-info" type="submit">Add a Note</button>
+</form>
+
+
+
+<script>
+  // When you click the delete button
+  $(document).on("click", ".btn-danger", function () {
+    // Grab the id associated with the article from the submit button
+    var thisId = $(this).attr("id");
+
+    // Run a POST request to change the note, using what's entered in the inputs
+    $.ajax({
+      method: "DELETE",
+      url: "/notes/delete/" + thisId,
+    })
+      // With that done
+      .then(function (data) {
+        alert("Notes Deleted!")
+        location.reload();
+      });
+  });
+
+  //When you click the note button
+  
+
+
+</script>

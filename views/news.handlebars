@@ -1,9 +1,11 @@
  {{#each news}}
-<div class="panel panel-info">
+<div class="panel panel-primary">
   <div class="panel-heading">
     <div class="panel-title">
-      <a href={{this.link}}><h2>{{this.title}}</h2></a>
-    <a id={{this.index}} class="btn btn-success">Save the Article</a>
+      <a href={{this.link}}>
+        <h2>{{this.title}}</h2>
+      </a>
+      <a id={{this.index}} class="btn btn-info">Save the Article</a>
     </div>
   </div>
   <div class="panel-body">
@@ -15,20 +17,20 @@
 
 <script>
   // When you click the savenote button
-  $(document).on("click", ".btn-success", function () {
+  $(document).on("click", ".btn-info", function () {
     // Grab the id associated with the article from the submit button
     var thisId = $(this).attr("id");
-  
+
     // Run a POST request to change the note, using what's entered in the inputs
     $.ajax({
       method: "POST",
       url: "/articles/" + thisId,
       data: {
         // Value taken from title input
-        title: $(this).siblings("h1").children("a").text(),
+        title: $(this).siblings("a").children("h2").text(),
         // Value taken from note textarea
-        summary: $(this).parent("div").siblings("div.panel-body").children("div").text(),
-        link: $(this).siblings("h1").children("a").attr("href")
+        summary: $(this).parents("div").siblings("div.panel-body").children("div").text(),
+        link: $(this).siblings("a").attr("href")
       }
     })
       // With that done
@@ -40,6 +42,6 @@
           alert("Article " + data._id + " Saved!")
         }
       });
-      });
+  });
 
 </script>
