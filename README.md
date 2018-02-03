@@ -1,5 +1,7 @@
 # Tech News Scraping
 
+This app is deployed using [Heroku](https://news-scraped.herokuapp.com/)
+
 ### Click `Scrape Articles` to show the latest articles.
 
 ### Click `Save Article` to save it in the database.
